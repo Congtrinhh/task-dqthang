@@ -13,6 +13,10 @@ onMounted(async () => {
   //fetch()
 });
 
+/**
+ * gửi request đến api và
+ * trả về response dạng object: {success:boolean; sendData: object; apiResponse: object}
+ */
 async function sendRequest(data) {
   const headers = new Headers();
   headers.append(
@@ -51,65 +55,12 @@ async function sendRequest(data) {
   return finalResponse;
 }
 
-async function sendRequest2x() {
-  //
-  try {
-    Object.entries(cc);
-    const v = getData('1042683', 2, arrBudgetCode, arrCode);
-    console.log('v', v);
-  } catch (error) {
-    console.error(error);
-  }
-
-  const headers = new Headers();
-  headers.append(
-    'Token',
-    'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im1pc2EiLCJpc3MiOiI2NjFiZjkwN2JmZmJiNjNmYWYwYzFiNWEiLCJleHAiOjE3MTcxMTc0Mzh9.VN_lqUk9j2r4oYOna41H1c2L2GJJJu0-4q9YU8Lgqdo'
-  );
-  headers.append('Username', 'misa');
-  headers.append(
-    'Cookie',
-    'AUTH_BEARER_default=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE3MTcwMzI5NzgsImp0aSI6ImMzdnkvQXhiaTlTckFOekVaK216NVNROHdENFdEZkxEYU5tQjJuKzdFbmM9IiwiaXNzIjoiZHRpLmhjbS5lZHUudm4iLCJuYmYiOjE3MTcwMzI5NzgsImV4cCI6MTcxNzAzNjU3OCwiZGF0YSI6ImNzcmZUb2tlbnxzOjY0OlwiZWVmMDBmZTEwMjQxNGZlOGY1OTFmOWI3Njc0YmY0NjgzNjIwMzRlMjA2MDExYzQxNDFhMzUwY2VlOGMyMWY0YVwiO2d1ZXN0SWR8czozMjpcIjA1MmE0NTVkMTZmZGUyYjcwMTFhYmQyZmZhZTk4NTdiXCI7In0.oa3zIrw7BvsTy3QsFZOI_hrUe1tNW0cd0J1CWaafCpWbZ2idzYD68tVet4pnU92MIRZVT40K89G9OlvJ_CK1Cw; be=8'
-  );
-  const myRequest = new Request(
-    'https://dti.hcm.edu.vn/sync-data/lms/sendEquipmentInfo',
-    {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify({
-        data: {
-          hasDeviceInformatics: 2,
-        },
-        schoolCode: '7900004011xxxx111',
-      }),
-    }
-  );
-
-  const response = await fetch(myRequest);
-  console.log(response);
-
-  let finalResponse = {};
-
-  if (!response.ok) {
-    throw new Error('Network response was not OK');
-    finalResponse.success = false;
-  } else {
-    const json = await response.json();
-    finalResponse.success = true;
-    finalResponse.apiResponse = json;
-
-    console.log('json', json);
-  }
-
-  return finalResponse;
-}
-
-const apiResponseExample = {
+const responseSuccessExample = {
   status: 'SUCCESS',
   message: 'Cập nhật thành công',
 };
 
-const apiResponseFailure = {
+const responseFailureExample = {
   status: 'FAIL',
   message: 'Mã trường không hợp lệ',
 };
@@ -118,6 +69,17 @@ const apiResponseFailure = {
 const responseObjectSave = {};
 // lưu messge ko tìm thấy data - dữ liệu gửi lên api
 const errorListBuildData = [];
+
+async function sendOneRequest() {
+  const data = {
+    data: {
+      hasDeviceInformatics: 0,
+    },
+    schoolCode: '79000701',
+  };
+
+  const response = await sendRequest(data);
+}
 
 async function sendAllRequests() {
   for (const [key, value] of Object.entries(cc)) {
@@ -514,8 +476,13 @@ const arrBudgetCode = [
 </script>
 
 <template>
-  <button @click="sendAllRequests">Bấm để gửi</button>
-  <h1>{{ msg }}</h1>
+  <button @click="sendAllRequests" style="border: 1px solid">
+    Bấm để gửi tất cả
+  </button>
+  <button @click="sendOneRequest" style="border: 1px solid">
+    Bấm để gửi thử 1
+  </button>
+  <h2>{{ msg }}</h2>
 
   <div class="card">
     <button type="button" @click="count++">count is {{ count }}</button>
